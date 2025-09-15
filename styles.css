@@ -34,7 +34,7 @@ body{
 }
 
 .logo {
-  width: 120px;
+  width: clamp(96px, 14vw, 200px);
   height: auto;
   display: block;
   margin: 0 auto 12px;
