@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rare Heart — Share love. Inspire action.</title>
+  <meta name="description" content="Rare Heart — spreading love and positivity through community programs. Join our email list.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --crimson:#DC143C;     /* primary */
+      --charcoal:#1A1A1A;    /* background */
+      --ivory:#FFFFF0;       /* text */
+      --charcoal-600:#2A2A2A;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background:var(--charcoal);
+      color:var(--ivory);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding:32px 16px 40px;
+      gap:10px;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:8px; /* brings hero closer to the form */
+    }
+    .logo{
+      width: clamp(120px, 18vw, 200px); /* fluid logo size */
+      height:auto;
+      display:block;
+      margin:0 auto 8px; /* small gap under logo */
+    }
+    h1{
+      margin:4px 0 4px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height:1.15;
+    }
+    .tagline{
+      margin:0 0 10px;
+      font-size: clamp(14px, 1.6vw, 18px);
+      opacity:0.9;
+    }
+
+    .card{
+      width:min(680px,100%);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+      border:1px solid var(--charcoal-600);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    }
+    .card h2{margin:4px 0 6px; font-size: clamp(20px, 2.4vw, 28px)}
+    .card p{margin-top:0}
+
+    form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;  /* email | phone on desktop */
+      gap:12px;
+      margin-top:12px;
+    }
+
+    /* Inputs — email + phone (charcoal background) */
+    input[type="email"], input[type="tel"]{
+      width:100%;
+      padding:14px 16px;
+      border-radius:10px;
+      border:1px solid var(--charcoal-600);
+      background:#101010; /* or var(--charcoal) if you prefer pure charcoal */
+      color:var(--ivory);
+      font-size:16px;
+      outline:none;
+    }
+    input::placeholder{color:#bfbfbf}
+    input[type="email"]:focus, input[type="tel"]:focus{
+      border-color:var(--crimson);
+      box-shadow:0 0 0 3px rgba(220,20,60,0.35);
+    }
+
+    fieldset{
+      grid-column:1 / 2; /* left side on desktop */
+      margin:6px 0 0;
+      padding:10px 12px;
+      border:2px solid var(--charcoal-600);
+      border-radius:8px;
+    }
+    fieldset legend{
+      padding:0 6px;
+      font-weight:600;
+      opacity:0.95;
+    }
+
+    button{
+      grid-column:2 / 3;     /* right side on desktop */
+      align-self:stretch;
+      justify-self:stretch;
+      padding:10px 14px;     /* smaller button */
+      border-radius:10px;
+      border:0;
+      font-weight:700;
+      font-size:15px;
+      background:var(--crimson);
+      color:var(--ivory);
+      cursor:pointer;
+      transition:transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+    button:hover{ transform:translateY(-1px); box-shadow:0 8px 16px rgba(220,20,60,0.35);}
+    button:active{ transform:translateY(0); box-shadow:none;}
+
+    .privacy{
+      grid-column:1 / -1;
+      font-size:13px;
+      opacity:0.85;
+      margin:6px 2px 0;
+    }
+
+    .site-footer{
+      text-align:center;
+      padding:18px 12px 28px;
+      opacity:0.75;
+    }
+
+    .hidden{ display:none !important; }
+    .sr-only{
+      position:absolute !important;
+      width:1px;height:1px;
+      padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+    }
+
+    /* Mobile: stack form vertically */
+    @media (max-width: 640px){
+      .card{ width:min(560px,100%); padding:18px; }
+      form{ grid-template-columns:1fr; }
+      fieldset{ grid-column:1 / -1; }
+      button{ grid-column:1 / -1; width:100%; }
+      .logo{ margin-bottom:6px; }
+      .tagline{ margin-bottom:8px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <!-- Swap src if your logo file is different -->
+      <img src="assets/logo.png" alt="Rare Heart logo" class="logo" />
+      <h1>Rare Heart</h1>
+      <p class="tagline">Sharing Love. Building Community.</p>
+    </header>
+
+    <section class="card">
+      <h2>Join Our Community</h2>
+      <p>Get updates on merchandise, literacy & mentorship programs, health and wellness, and ways to get involved.</p>
+
+<form id="rh-form">
+  <!-- email -->
+  <label for="email" class="sr-only">Email</label>
+  <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+  <!-- phone (optional) -->
+  <label for="phone" class="sr-only">Phone</label>
+  <input id="phone" name="phone" type="tel" placeholder="+1 234 567 8901" pattern="^\+?[0-9\s\-()]{7,20}$" />
+
+  <!-- interests -->
+  <fieldset>
+    <legend>Areas of Interest</legend>
+    <label><input type="checkbox" name="interest" value="Merchandise"> Merchandise</label><br>
+    <label><input type="checkbox" name="interest" value="Mentorship"> Mentorship</label><br>
+    <label><input type="checkbox" name="interest" value="Wellness"> Wellness</label><br>
+    <label><input type="checkbox" name="interest" value="Fitness"> Fitness</label><br>
+    <label><input type="checkbox" name="interest" value="Digital Marketing"> Digital Marketing</label><br>
+    <label><input type="checkbox" name="interest" value="Sports"> Sports</label><br>
+    <label><input type="checkbox" name="interest" value="Community"> Community</label><br>
+  </fieldset>
+
+  <button type="submit">Let Love Conquer</button>
+</form>
+
+<script>
+  const form = document.getElementById('rh-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    // convert interests (multi-value) to an array
+    const interests = fd.getAll('interest');
+    // build JSON payload
+    const payload = {
+      email: fd.get('email') || '',
+      phone: fd.get('phone') || '',
+      interest: interests
+    };
+    try {
+      await fetch('https://hook.us2.make.com/sg52hm5eqw7e1s98kijgui2nses0nnwa', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      window.location.href = '/thank-you.html';
+    } catch(err){
+      alert('Submission failed. Please try again.');
+      console.error(err);
+    }
+  });
+</script>
+
+        <button type="submit" aria-label="Join the Rare Heart email list">Let Love Conquer</button>
+        <p class="privacy">We’ll only email about Rare Heart projects. Unsubscribe anytime.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>&copy; 2025 Rare Heart. All rights reserved.</small>
+  </footer>
+</body>
+</html>
+
