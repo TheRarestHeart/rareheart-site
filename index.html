@@ -125,28 +125,32 @@
       if(!email){ statusEl.textContent = "Please enter your email."; return; }
 
       const interests = Array.from(form.querySelectorAll('input[name="interest"]:checked')).map(i => i.value);
-      const payload = {
-        timestamp: new Date().toISOString(),
-        name, email, phone,
-        interest: interests.join(", "),
-        source: location.host || "rareheart.foundation",
-        raffle: "Rare Heart merch raffle — 2 winners"
-      };
+    const payload = {
+  timestamp: new Date().toISOString(),
+  name: form.name.value.trim(),
+  email: form.email.value.trim(),
+  phone: form.phone.value.trim(),
+  interest: Array.from(form.querySelectorAll('input[name="interest"]:checked'))
+                  .map(i => i.value)
+                  .join(", "),
+  source: location.host || "rareheart.foundation",
+  raffle: "Rare Heart merch raffle — 2 winners"
+};
+try {
+  statusEl.textContent = "Submitting…";
+  const res = await fetch("https://hooks.zapier.com/hooks/catch/24615046/um911if/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),   // <– must be JSON
+    mode: "cors"
+  });
+  if (!res.ok) throw new Error("Webhook returned " + res.status);
+  location.href = "thank-you.html";
+} catch (err) {
+  console.error(err);
+  statusEl.textContent = "Submission failed. Please try again.";
+}
 
-      try{
-        statusEl.textContent = "Submitting…";
-        const res = await fetch(ZAPIER_WEBHOOK_URL, {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify(payload),
-          mode: "cors"
-        });
-        if(!res.ok) throw new Error("Webhook returned " + res.status);
-        location.href = "thank-you.html";
-      }catch(err){
-        console.error(err);
-        statusEl.textContent = "Submission failed. Please try again.";
-      }
     });
   </script>
 </body>
