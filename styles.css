@@ -90,18 +90,46 @@ input[type="tel"]:focus {
   box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.35);
 }
 
-/* Submit button */
-button[type="submit"] {
-  background: #dc143c;  /* crimson red */
-  color: #fff;          /* white text */
-  border: none;
-  border-radius: 10px;
-  padding: 14px 16px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s ease;
+/* Add full name field styling */
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
   width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--stroke);
+  background: #0b0b0b;   /* charcoal black background */
+  color: var(--ivory);   /* ivory text */
+  font-size: 16px;
+  outline: none;
+}
+input::placeholder {
+  color: #bfbfbf;
+}
+input:focus {
+  border-color: var(--crimson);
+  box-shadow: 0 0 0 3px rgba(220,20,60,.35);
+}
+
+/* Submit button crimson red */
+button.btn {
+  grid-column: 2 / 3;
+  align-self: stretch;
+  justify-self: stretch;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 0;
+  font-weight: 700;
+  background: var(--crimson); /* crimson red */
+  color: var(--ivory);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+button.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(220,20,60,.35);
+}
+
 }
 
 /* Hover effect */
