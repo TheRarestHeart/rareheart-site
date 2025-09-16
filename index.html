@@ -65,63 +65,88 @@
       <h2>Join Our Community</h2>
       <p>Get updates on merchandise, literacy & mentorship programs, wellness, and ways to get involved.</p>
 
-      <form id="rh-form" novalidate>
-        <label for="email" class="sr-only">Email</label>
-        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+      <!-- ====== SIGNUP FORM (Zapier Webhook) ====== -->
+<form id="rh-form" novalidate>
+  <!-- Full name (required) -->
+  <label for="name" class="sr-only">Full name</label>
+  <input id="name" name="name" type="text" placeholder="Full name" required />
 
-        <label for="phone" class="sr-only">Phone</label>
-        <input id="phone" name="phone" type="tel" placeholder="+1 234 567 8901" pattern="^\+?[0-9\s\-()]{7,20}$" />
+  <!-- Email (required) -->
+  <label for="email" class="sr-only">Email address</label>
+  <input id="email" name="email" type="email" placeholder="you@example.com" required />
 
-        <fieldset>
-          <legend>Areas of Interest</legend>
-          <label><input type="checkbox" name="interest" value="Merchandise"> Merchandise</label><br/>
-          <label><input type="checkbox" name="interest" value="Mentorship"> Mentorship</label><br/>
-          <label><input type="checkbox" name="interest" value="Wellness"> Wellness</label><br/>
-          <label><input type="checkbox" name="interest" value="Fitness"> Fitness</label><br/>
-          <label><input type="checkbox" name="interest" value="Digital Marketing"> Digital Marketing</label><br/>
-          <label><input type="checkbox" name="interest" value="Sports"> Sports</label><br/>
-          <label><input type="checkbox" name="interest" value="Community"> Community</label>
-        </fieldset>
+  <!-- Phone (optional; country code) -->
+  <label for="phone" class="sr-only">Phone number (optional, include country code)</label>
+  <input id="phone" name="phone" type="tel" placeholder="+1 234 567 8901" pattern="^\+?[0-9\s\-()]{7,20}$" />
 
-        <button class="btn" type="submit">Let Love Conquer</button>
-        <p class="privacy">We’ll only email about Rare Heart. Unsubscribe anytime.</p>
-      </form>
-    </section>
-  </main>
+  <!-- Interests -->
+  <fieldset>
+    <legend>Areas of Interest</legend>
+    <label><input type="checkbox" name="interest" value="Merchandise"> Merchandise</label><br>
+    <label><input type="checkbox" name="interest" value="Mentorship"> Mentorship</label><br>
+    <label><input type="checkbox" name="interest" value="Wellness"> Wellness</label><br>
+    <label><input type="checkbox" name="interest" value="Fitness"> Fitness</label><br>
+    <label><input type="checkbox" name="interest" value="Digital Marketing"> Digital Marketing</label><br>
+    <label><input type="checkbox" name="interest" value="Sports"> Sports</label><br>
+    <label><input type="checkbox" name="interest" value="Community"> Community</label><br>
+  </fieldset>
 
-  <footer class="site-footer">
-    <small>&copy; 2025 Rare Heart. All rights reserved.</small>
-  </footer>
+  <button type="submit" aria-label="Join the Rare Heart email list">Let Love Conquer</button>
+  <p class="privacy">We’ll only email about Rare Heart projects. Unsubscribe anytime.</p>
+  <p id="submit-status" class="status" aria-live="polite"></p>
+</form>
 
-  <script>
-    // Make.com webhook URL (kept from your earlier setup)
-    const MAKE_WEBHOOK = "https://hook.us2.make.com/sg52hm5eqw7e1s98kijgui2nses0nnwa";
+<script>
+  // ------------- SET THIS -------------
+  const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24615046/um911if/";
+  // ------------------------------------
 
-    const form = document.getElementById('rh-form');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(form);
-      const payload = {
-        email: (fd.get('email')||'').trim(),
-        phone: (fd.get('phone')||'').trim(),
-        interest: fd.getAll('interest'),
-        form: "community_signup",
-        source: location.host || "rareheart.foundation",
-        ts: new Date().toISOString()
-      };
-      try{
-        const res = await fetch(MAKE_WEBHOOK, {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify(payload)
-        });
-        if(!res.ok) throw new Error("Webhook returned " + res.status);
-        location.href = "thank-you.html";
-      }catch(err){
-        console.error(err);
-        alert("Submission failed. Please try again in a moment.");
-      }
-    });
-  </script>
+  const form = document.getElementById('rh-form');
+  const statusEl = document.getElementById('submit-status');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Basic checks
+    const name  = (form.name.value  || "").trim();
+    const email = (form.email.value || "").trim();
+    const phone = (form.phone.value || "").trim();
+
+    if (!name)  { statusEl.textContent = "Please enter your full name."; return; }
+    if (!email) { statusEl.textContent = "Please enter your email."; return; }
+
+    // Interests: join into a single string for easier Sheets mapping
+    const interests = Array.from(form.querySelectorAll('input[name="interest"]:checked')).map(i => i.value);
+    const interestStr = interests.join(", ");
+
+    // Timestamp (ISO) created client-side
+    const timestamp = new Date().toISOString();
+
+    // Build payload for Zapier
+    const payload = {
+      timestamp,   // e.g., 2025-09-15T17:31:22.123Z
+      name,
+      email,
+      phone,
+      interest: interestStr,
+      source: "rareheart.foundation"
+    };
+
+    try {
+      statusEl.textContent = "Submitting…";
+      const res = await fetch(ZAPIER_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        mode: "cors"     // Zapier accepts CORS
+      });
+      if (!res.ok) throw new Error("Network response was not ok");
+      window.location.href = "thank-you.html";
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "Submission failed. Please try again.";
+    }
+  });
+</script>   
 </body>
 </html>
