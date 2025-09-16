@@ -67,38 +67,47 @@ form{
   gap:12px;
   margin-top:12px;
 }
+/* Full name, email, phone inputs */
 input[type="text"],
 input[type="email"],
-input[type="tel"]{
-  width:100%;
-  padding:14px 16px;
-  border-radius:10px;
-  border:1px solid var(--charcoal-600);
-  background:#101010;
-  color:var(--ivory);
-  font-size:16px;
-  outline:none;
+input[type="tel"] {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #333; /* subtle border */
+  background: #101010;    /* charcoal black */
+  color: #fff;            /* ivory white text */
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 12px;    /* spacing between fields */
 }
+
+/* Focus effect */
 input[type="text"]:focus,
 input[type="email"]:focus,
-input[type="tel"]:focus{
-  border-color:var(--crimson);
-  box-shadow:0 0 0 3px rgba(220,20,60,0.35);
+input[type="tel"]:focus {
+  border-color: #dc143c; /* crimson red border on focus */
+  box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.35);
 }
 
-button {
-  padding: 10px 14px;       /* smaller padding */
-  border-radius: 8px;       /* slightly smaller corners */
-  font-weight: 600;
-  font-size: 14px;          /* smaller text */
-  background: var(--crimson);
-  color: var(--ivory);
+/* Submit button */
+button[type="submit"] {
+  background: #dc143c;  /* crimson red */
+  color: #fff;          /* white text */
+  border: none;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  transition: background 0.2s ease;
+  width: 100%;
 }
 
-button:hover{ transform:translateY(-1px); box-shadow:0 8px 16px rgba(220,20,60,0.35);}
-button:active{ transform:translateY(0); box-shadow:none;}
+/* Hover effect */
+button[type="submit"]:hover {
+  background: #b01030; /* darker crimson */
+}
 
 /* Phone input styling */
 input[type="tel"] {
