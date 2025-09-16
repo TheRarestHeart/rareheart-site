@@ -67,7 +67,9 @@ form{
   gap:12px;
   margin-top:12px;
 }
-input[type="email"]{
+input[type="text"],
+input[type="email"],
+input[type="tel"]{
   width:100%;
   padding:14px 16px;
   border-radius:10px;
@@ -77,8 +79,9 @@ input[type="email"]{
   font-size:16px;
   outline:none;
 }
-input[type="email"]::placeholder{color:#bfbfbf}
-input[type="email"]:focus{
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus{
   border-color:var(--crimson);
   box-shadow:0 0 0 3px rgba(220,20,60,0.35);
 }
