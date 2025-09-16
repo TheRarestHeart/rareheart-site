@@ -108,49 +108,87 @@
     <small>&copy; 2025 Rare Heart. All rights reserved.</small>
   </footer>
 
-  <script>
-    // ===== Zapier webhook (Catch Hook) =====
-    const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24615046/um911if/";
+<script>
+  // Your Zapier Catch Hook (try without trailing slash if needed)
+  const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24615046/um911if";
 
-    const form = document.getElementById('rh-form');
-    const statusEl = document.getElementById('submit-status');
+  const form = document.getElementById('rh-form');
+  const statusEl = document.getElementById('submit-status');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  function buildPayload() {
+    const interests = Array.from(
+      form.querySelectorAll('input[name="interest"]:checked')
+    ).map(i => i.value).join(", ");
+    return {
+      timestamp: new Date().toISOString(),
+      name: (form.name?.value || "").trim(),
+      email: (form.email?.value || "").trim(),
+      phone: (form.phone?.value || "").trim(),
+      interest: interests,
+      source: location.host || "rareheart.foundation",
+      discord: "https://discord.gg/uXqNP3aK",
+      raffle: "Rare Heart merch raffle — 2 winners"
+    };
+  }
 
-      const name  = (form.name.value  || "").trim();
-      const email = (form.email.value || "").trim();
-      const phone = (form.phone.value || "").trim();
-      if(!name){ statusEl.textContent = "Please enter your full name."; return; }
-      if(!email){ statusEl.textContent = "Please enter your email."; return; }
-
-      const interests = Array.from(form.querySelectorAll('input[name="interest"]:checked')).map(i => i.value);
-    const payload = {
-  timestamp: new Date().toISOString(),
-  name: form.name.value.trim(),
-  email: form.email.value.trim(),
-  phone: form.phone.value.trim(),
-  interest: Array.from(form.querySelectorAll('input[name="interest"]:checked'))
-                  .map(i => i.value)
-                  .join(", "),
-  source: location.host || "rareheart.foundation",
-  raffle: "Rare Heart merch raffle — 2 winners"
-};
-try {
-  statusEl.textContent = "Submitting…";
-  const res = await fetch("https://hooks.zapier.com/hooks/catch/24615046/um911if/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),   // <– must be JSON
-    mode: "cors"
-  });
-  if (!res.ok) throw new Error("Webhook returned " + res.status);
-  location.href = "thank-you.html";
-} catch (err) {
-  console.error(err);
-  statusEl.textContent = "Submission failed. Please try again.";
-}
+  async function postJSON(url, data) {
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      mode: "cors",
+      cache: "no-store"
     });
-  </script>
+  }
+
+  async function postFormEncoded(url, data) {
+    const enc = new URLSearchParams();
+    for (const [k,v] of Object.entries(data)) enc.append(k, v);
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: enc.toString(),
+      mode: "cors",
+      cache: "no-store"
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusEl.textContent = "";
+    const payload = buildPayload();
+
+    if (!payload.name)  { statusEl.textContent = "Please enter your full name."; return; }
+    if (!payload.email) { statusEl.textContent = "Please enter your email."; return; }
+
+    try {
+      statusEl.textContent = "Submitting…";
+      console.log("[RareHeart] Payload:", payload);
+
+      // Try JSON
+      let res = await postJSON(ZAPIER_WEBHOOK_URL, payload);
+      let body = await res.text().catch(()=> "");
+      console.log("[RareHeart] JSON response:", res.status, body);
+
+      // Fallback if not OK
+      if (!res.ok) {
+        console.warn("[RareHeart] JSON failed; trying form-encoded fallback…");
+        res = await postFormEncoded(ZAPIER_WEBHOOK_URL, payload);
+        body = await res.text().catch(()=> "");
+        console.log("[RareHeart] Form-encoded response:", res.status, body);
+      }
+
+      if (res.ok) {
+        // If you don't have thank-you.html yet, show inline success
+        window.location.href = "thank-you.html";
+      } else {
+        statusEl.textContent = "Submission failed (server error). See console for details.";
+      }
+    } catch (err) {
+      console.error("[RareHeart] Submission error:", err);
+      statusEl.textContent = "Submission failed (network error). See console for details.";
+    }
+  });
+</script>
 </body>
 </html>
