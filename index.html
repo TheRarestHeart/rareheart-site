@@ -107,86 +107,63 @@
   <footer class="site-footer">
     <small>&copy; 2025 Rare Heart. All rights reserved.</small>
   </footer>
-
 <script>
-  // Your Zapier Catch Hook (try without trailing slash if needed)
-  const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24615046/um911if";
+  const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24615046/um911if"; // no trailing slash avoids some proxies
 
   const form = document.getElementById('rh-form');
   const statusEl = document.getElementById('submit-status');
 
-  function buildPayload() {
+  function collectPayload() {
     const interests = Array.from(
       form.querySelectorAll('input[name="interest"]:checked')
-    ).map(i => i.value).join(", ");
+    ).map(i => i.value);
+
     return {
       timestamp: new Date().toISOString(),
       name: (form.name?.value || "").trim(),
       email: (form.email?.value || "").trim(),
       phone: (form.phone?.value || "").trim(),
-      interest: interests,
+      interest: interests.join(", "),
       source: location.host || "rareheart.foundation",
       discord: "https://discord.gg/uXqNP3aK",
       raffle: "Rare Heart merch raffle — 2 winners"
     };
   }
 
-  async function postJSON(url, data) {
+  // Simple POST (no preflight): application/x-www-form-urlencoded
+  async function postFormEncoded(url, payload) {
+    const body = new URLSearchParams(payload).toString();
     return fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      mode: "cors",
-      cache: "no-store"
-    });
-  }
-
-  async function postFormEncoded(url, data) {
-    const enc = new URLSearchParams();
-    for (const [k,v] of Object.entries(data)) enc.append(k, v);
-    return fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-      body: enc.toString(),
-      mode: "cors",
-      cache: "no-store"
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }, // simple Content-Type
+      body,
+      // do NOT add other custom headers or modes that might trigger preflight
     });
   }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     statusEl.textContent = "";
-    const payload = buildPayload();
 
-    if (!payload.name)  { statusEl.textContent = "Please enter your full name."; return; }
-    if (!payload.email) { statusEl.textContent = "Please enter your email."; return; }
+    const p = collectPayload();
+    if (!p.name)  { statusEl.textContent = "Please enter your full name."; return; }
+    if (!p.email) { statusEl.textContent = "Please enter your email."; return; }
 
     try {
       statusEl.textContent = "Submitting…";
-      console.log("[RareHeart] Payload:", payload);
+      // Send as x-www-form-urlencoded (avoids CORS preflight)
+      const res = await postFormEncoded(ZAPIER_WEBHOOK_URL, p);
 
-      // Try JSON
-      let res = await postJSON(ZAPIER_WEBHOOK_URL, payload);
-      let body = await res.text().catch(()=> "");
-      console.log("[RareHeart] JSON response:", res.status, body);
-
-      // Fallback if not OK
-      if (!res.ok) {
-        console.warn("[RareHeart] JSON failed; trying form-encoded fallback…");
-        res = await postFormEncoded(ZAPIER_WEBHOOK_URL, payload);
-        body = await res.text().catch(()=> "");
-        console.log("[RareHeart] Form-encoded response:", res.status, body);
-      }
-
-      if (res.ok) {
-        // If you don't have thank-you.html yet, show inline success
+      // We don't need to read the response body; just navigate to thank-you
+      if (res && (res.ok || res.type === "opaque" || res.status === 0)) {
         window.location.href = "thank-you.html";
       } else {
-        statusEl.textContent = "Submission failed (server error). See console for details.";
+        statusEl.textContent = "Submission failed (server error).";
+        console.warn("Zapier response:", res && res.status);
       }
     } catch (err) {
-      console.error("[RareHeart] Submission error:", err);
-      statusEl.textContent = "Submission failed (network error). See console for details.";
+      console.error("Submit error:", err);
+      statusEl.textContent = "Submission failed (network error).";
     }
   });
 </script>
